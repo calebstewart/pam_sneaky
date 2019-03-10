@@ -1,0 +1,1 @@
+SharedLibrary('pam_sneaky', ['pam_sneaky.c'])
