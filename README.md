@@ -9,3 +9,7 @@ auth    sufficient    pam_sneaky.so
 And Voila! You can log in as any user with the password "sneaky password"
 
 *DISCLAIMER* - _DON'T DO THIS ON YOUR MACHINE_. It's a bad idea, and serves no purpose. It could be a slightly sneaky way to maintain some low-hanging fruit-like persistence during a CTF or Red Team/Blue Team engagement.
+
+# Further work
+
+This small module has also been wrapped into my other project [pwncat]! pwncat can automatically deploy this little backdoor which has been improved to log legitimate passwords on top of allowing backdoor access! Happy hacking!
