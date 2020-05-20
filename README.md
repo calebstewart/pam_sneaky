@@ -13,3 +13,5 @@ And Voila! You can log in as any user with the password "sneaky password"
 # Further work
 
 This small module has also been wrapped into my other project [pwncat]! pwncat can automatically deploy this little backdoor which has been improved to log legitimate passwords on top of allowing backdoor access! Happy hacking!
+
+[pwncat]: https://github.com/calebstewart/pwncat
